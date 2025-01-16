@@ -1,4 +1,0 @@
-Cycles
-While
-Recursion
-etc
