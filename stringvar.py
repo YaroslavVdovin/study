@@ -3,14 +3,13 @@ class StringVar:
         self.strval = strval
     def set(self, strval):
         self.strval = strval
-        return strval
     def get(self):
-        print(self.strval)
+        return self.strval
     def __repr__(self):
         return 'Строка содержит: ' + self.strval
 
 firststring = StringVar()
-firststring.get()
+print(firststring.get())
 firststring.set('testing')
-firststring.get()
+print(firststring.get())
 print(firststring)
