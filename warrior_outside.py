@@ -12,8 +12,8 @@ import random
 def fight(player1, player2):
     """Функция для старта шага - создаем таблицы действий и начинаем цикл"""
 
-    p1_action = ({"attackp1": lambda: player1._attack(), "protectp1": lambda: player1._protect(player2.attack_power)})
-    p2_action = ({"attackp2": lambda: player2._attack(), "protectp2": lambda: player2._protect(player1.attack_power)})
+    p1_action = ({"attackp1": lambda: player1._attack(), "protectp1": lambda: player1._protect(player2.get_attack_power())})
+    p2_action = ({"attackp2": lambda: player2._attack(), "protectp2": lambda: player2._protect(player1.get_attack_power())})
 
     while player1.healthbar > 10 and player2.healthbar > 10:
         random.choice(list(p1_action.values()))()
@@ -63,7 +63,8 @@ class WarmongerPRO(Warmonger):
             self.attack_power = random.randint(0, 10)
         return self.attack_power
 
-
+    def get_attack_power(self):
+        return self.attack_power
     def _protect(self, damage):
         """Функция защиты. Итоговый импакт на здоровье и броню расчитывается в зависимости от силы атаки противника"""
         self.attack_power = 0
