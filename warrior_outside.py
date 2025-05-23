@@ -46,6 +46,14 @@ class WarmongerPRO(Warmonger):
         self.stamina = stamina
         self.attack_power = attack_power
 
+    @property
+    def attack_power(self):
+        return self._attack_power
+
+    @attack_power.setter
+    def attack_power(self, value):
+        self._attack_power = value
+
     def _attack(self):
         """Функция атаки."""
         if self.stamina > 0:
@@ -55,8 +63,10 @@ class WarmongerPRO(Warmonger):
             self.attack_power = random.randint(0, 10)
         return self.attack_power
 
+
     def _protect(self, damage):
         """Функция защиты. Итоговый импакт на здоровье и броню расчитывается в зависимости от силы атаки противника"""
+        self.attack_power = 0
         self.damage = damage
         if self.armor >= self.damage:
             health_taken = random.randint(0,self.damage)
