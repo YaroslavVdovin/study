@@ -11,20 +11,31 @@ import random
 
 def fight(player1, player2):
     """Функция для старта шага - создаем таблицы действий и начинаем цикл"""
-
-    p1_action = ({"attackp1": lambda: player1._attack(), "protectp1": lambda: player1._protect(player2.get_attack_power())})
-    p2_action = ({"attackp2": lambda: player2._attack(), "protectp2": lambda: player2._protect(player1.get_attack_power())})
-
+    
     while player1.healthbar > 10 and player2.healthbar > 10:
-        random.choice(list(p1_action.values()))()
-        random.choice(list(p2_action.values()))()
-        print(player1.name, player1.healthbar, player1.armor, player1.stamina)
-        print(player2.name, player2.healthbar, player2.armor, player2.stamina)
-        if player2.healthbar <= 10:
-            mercy(player2)
-        elif player1.healthbar <= 10:
-            mercy(player1)
-
+        role1 = random.choice(['attacker', 'defender'])
+        role2 = random.choice(['attacker', 'defender'])
+        if role1 == 'attacker' and role2 == 'attacker':
+                player1.mutual_attack()
+                player2.mutual_attack()
+        else:        
+            for p in (player1, player2):
+                damage1 = 0
+                damage2 = 0
+                if role1 == 'attacker':
+                    damage1 = player1.attack()
+                    player2.protect(damage1)
+                else:
+                    damage2 = player2.attack()
+                    player1.protect(damage2)
+        print(warrior1.name, warrior1.healthbar, warrior1.armor, warrior1.stamina,
+              warrior2.name, warrior2.healthbar, warrior2.armor, warrior2.stamina)
+    if player1.healthbar < 10:
+        mercy(player1)
+    elif player2.healthbar < 10:
+        mercy(player2)
+                  
+            
 def mercy(player):
     """Функция пощадить или не пощадить - пользователь должен ввести да или нет"""
     while True:
@@ -46,42 +57,37 @@ class WarmongerPRO(Warmonger):
         self.stamina = stamina
         self.attack_power = attack_power
 
-    @property
-    def attack_power(self):
-        return self._attack_power
-
-    @attack_power.setter
-    def attack_power(self, value):
-        self._attack_power = value
-
-    def _attack(self):
+    def attack(self):
         """Функция атаки."""
         if self.stamina > 0:
-            self.attack_power = random.randint(0,20)
             self.stamina -= 10
+            return random.randint(0,20)
         else:
-            self.attack_power = random.randint(0, 10)
-        return self.attack_power
+            return random.randint(0, 10)
+    
+    def mutual_attack(self):
+        self.healthbar -= random.randint(10, 30)
+        if self.healthbar < 0:
+            self.healthbar = 0
 
-    def get_attack_power(self):
-        return self.attack_power
-    def _protect(self, damage):
+    def protect(self, damage):
         """Функция защиты. Итоговый импакт на здоровье и броню расчитывается в зависимости от силы атаки противника"""
-        self.attack_power = 0
-        self.damage = damage
-        if self.armor >= self.damage:
-            health_taken = random.randint(0,self.damage)
+        if self.armor >= damage:
+            health_taken = random.randint(0, damage)
             self.healthbar -= health_taken
-            self.armor -= self.damage - health_taken
+            self.armor -= damage - health_taken
         elif self.armor == 0:
-            self.healthbar -= self.damage
+            self.healthbar -= damage
         else:
-            self.healthbar -= self.damage - self.armor
+            self.healthbar -= damage - self.armor
             self.armor = 0
+        if self.healthbar < 0:
+            self.healthbar = 0
+
 
 """Тест-кейс"""
 if __name__ == "__main__":
     warrior1 = WarmongerPRO('Parsifal')
     warrior2 = WarmongerPRO('Merlin')
     fight(warrior1, warrior2)
-
+   
