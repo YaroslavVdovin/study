@@ -22,21 +22,21 @@ def fight(*players):
     while True:
         attackers, defenders, players = role_choice(*players)
         main_player = random.choice([i for i in players])
-        targets = [i for i in players if i != main_player]
-        for t in targets:
-            if t in attackers:
-                damage = t.attack()
+        opponents = [i for i in players if i != main_player]
+        for op in opponents:
+            if op in attackers:
+                damage = op.attack()
                 if main_player in attackers:
                     main_player.mutual_attack()
-                    t.mutual_attack()
+                    op.mutual_attack()
                 else:
                     main_player.protect(damage)
             else:
                 if main_player in attackers:
                     damage = main_player.attack()
-                    t.protect(damage)
-        if t.healthbar <= 10:
-            mercy(t)
+                    op.protect(damage)
+        if op.healthbar <= 10:
+            mercy(op)
             break
         elif main_player.healthbar <= 10:
             mercy(main_player)
