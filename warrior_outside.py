@@ -7,31 +7,37 @@ from warrior_within import Warmonger
 import random
 
 """Рандом для трассировки урона"""
-
-
-def fight(player1, player2):
-    """Функция для старта шага - создаем таблицы действий и начинаем цикл"""
-
-    while player1.healthbar > 10 and player2.healthbar > 10:
-        role1 = random.choice(['attacker', 'defender'])
-        role2 = random.choice(['attacker', 'defender'])
-        if role1 == 'attacker' and role2 == 'attacker':
-                player1.mutual_attack()
-                player2.mutual_attack()
+def role_choice(*players):
+    attackers = []
+    defenders = []
+    for p in players:
+        role = random.choice(['attacker', 'defender'])
+        if role == 'attacker':
+            attackers.append(p)
         else:
-            if role1 == 'attacker':
-                damage = player1.attack()
-                player2.protect(damage)
-            else:
-                damage = player2.attack()
-                player1.protect(damage)
-        print(warrior1.name, warrior1.healthbar, warrior1.armor, warrior1.stamina,
-              warrior2.name, warrior2.healthbar, warrior2.armor, warrior2.stamina)
-    if player1.healthbar < 10:
-        mercy(player1)
-    elif player2.healthbar < 10:
-        mercy(player2)
+            defenders.append(p)
+    return attackers, defenders, players
 
+def fight(*players):
+    is_alive = True
+    while is_alive:
+        attackers, defenders, players = role_choice(*players)
+        for p in players:
+            enemy = random.choice(players)
+            if enemy in attackers:
+                p.mutual_attack()
+                enemy.mutual_attack()
+            else:
+                damage = p.attack()
+                enemy.protect(damage)
+            if enemy.healthbar <= 10:
+                mercy(enemy)
+                is_alive = False
+                break
+            elif p.healthbar <= 10:
+                mercy(p)
+                is_alive = False
+                break
 
 def mercy(player):
     """Функция пощадить или не пощадить - пользователь должен ввести да или нет"""
@@ -86,4 +92,5 @@ class WarmongerPRO(Warmonger):
 if __name__ == "__main__":
     warrior1 = WarmongerPRO('Parsifal')
     warrior2 = WarmongerPRO('Merlin')
+    players = [warrior1, warrior2]
     fight(warrior1, warrior2)
