@@ -19,46 +19,47 @@ def role_choice(*players):
     return attackers, defenders, players
 
 def fight(*players):
-    is_alive = True
-    while is_alive:
+    while True:
         attackers, defenders, players = role_choice(*players)
-        for p in players:
-            enemy = random.choice(players)
-            if enemy in attackers:
-                p.mutual_attack()
-                enemy.mutual_attack()
+        main_player = random.choice([i for i in players])
+        targets = [i for i in players if i != main_player]
+        for t in targets:
+            if t in attackers:
+                damage = t.attack()
+                if main_player in attackers:
+                    main_player.mutual_attack()
+                    t.mutual_attack()
+                else:
+                    main_player.protect(damage)
             else:
-                damage = p.attack()
-                enemy.protect(damage)
-            if enemy.healthbar <= 10:
-                mercy(enemy)
-                is_alive = False
-                break
-            elif p.healthbar <= 10:
-                mercy(p)
-                is_alive = False
-                break
-
+                if main_player in attackers:
+                    damage = main_player.attack()
+                    t.protect(damage)
+        if t.healthbar <= 10:
+            mercy(t)
+            break
+        elif main_player.healthbar <= 10:
+            mercy(main_player)
+            break
 def mercy(player):
     """Функция пощадить или не пощадить - пользователь должен ввести да или нет"""
     while True:
         show_wercy = input('Игрок %s при смерти. Ты хочешь его пощадить? Введите "да" или "нет" ' % player.name)
         if show_wercy == 'да':
             print('%s будет жить' % player.name)
-            break
+            return False
         elif show_wercy == 'нет':
             print('%s обречён на смерть' % player.name)
-            break
+            return False
         else:
             print("Ошибочный ввод")
 
 class WarmongerPRO(Warmonger):
     """Наследуем класс Warmonger из предыдущего задания + добавляем функционал брони (armor), выносливости (stamina), силы атаки (attack_power)"""
-    def __init__(self, name, healthbar=100, armor=100, stamina=100, attack_power=0):
+    def __init__(self, name, healthbar=100, armor=100, stamina=100):
         super().__init__(name, healthbar)
         self.armor = armor
         self.stamina = stamina
-        self.attack_power = attack_power
 
     def attack(self):
         """Функция атаки."""
