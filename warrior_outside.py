@@ -11,17 +11,17 @@ import random
 
 def fight(player1, player2):
     """Функция для старта шага - создаем таблицы действий и начинаем цикл"""
-    
+
     while player1.healthbar > 10 and player2.healthbar > 10:
         role1 = random.choice(['attacker', 'defender'])
         role2 = random.choice(['attacker', 'defender'])
+        damage1 = 0
+        damage2 = 0
         if role1 == 'attacker' and role2 == 'attacker':
                 player1.mutual_attack()
                 player2.mutual_attack()
-        else:        
+        else:
             for p in (player1, player2):
-                damage1 = 0
-                damage2 = 0
                 if role1 == 'attacker':
                     damage1 = player1.attack()
                     player2.protect(damage1)
@@ -34,8 +34,8 @@ def fight(player1, player2):
         mercy(player1)
     elif player2.healthbar < 10:
         mercy(player2)
-                  
-            
+
+
 def mercy(player):
     """Функция пощадить или не пощадить - пользователь должен ввести да или нет"""
     while True:
@@ -64,7 +64,7 @@ class WarmongerPRO(Warmonger):
             return random.randint(0,20)
         else:
             return random.randint(0, 10)
-    
+
     def mutual_attack(self):
         self.healthbar -= random.randint(10, 30)
         if self.healthbar < 0:
@@ -90,4 +90,3 @@ if __name__ == "__main__":
     warrior1 = WarmongerPRO('Parsifal')
     warrior2 = WarmongerPRO('Merlin')
     fight(warrior1, warrior2)
-   
