@@ -20,11 +20,11 @@ def fight(player1, player2):
                 player2.mutual_attack()
         else:
             if role1 == 'attacker':
-                damage1 = player1.attack()
-                player2.protect(damage1)
+                damage = player1.attack()
+                player2.protect(damage)
             else:
-                damage2 = player2.attack()
-                player1.protect(damage2)
+                damage = player2.attack()
+                player1.protect(damage)
         print(warrior1.name, warrior1.healthbar, warrior1.armor, warrior1.stamina,
               warrior2.name, warrior2.healthbar, warrior2.armor, warrior2.stamina)
     if player1.healthbar < 10:
