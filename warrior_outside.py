@@ -15,19 +15,16 @@ def fight(player1, player2):
     while player1.healthbar > 10 and player2.healthbar > 10:
         role1 = random.choice(['attacker', 'defender'])
         role2 = random.choice(['attacker', 'defender'])
-        damage1 = 0
-        damage2 = 0
         if role1 == 'attacker' and role2 == 'attacker':
                 player1.mutual_attack()
                 player2.mutual_attack()
         else:
-            for p in (player1, player2):
-                if role1 == 'attacker':
-                    damage1 = player1.attack()
-                    player2.protect(damage1)
-                else:
-                    damage2 = player2.attack()
-                    player1.protect(damage2)
+            if role1 == 'attacker':
+                damage1 = player1.attack()
+                player2.protect(damage1)
+            else:
+                damage2 = player2.attack()
+                player1.protect(damage2)
         print(warrior1.name, warrior1.healthbar, warrior1.armor, warrior1.stamina,
               warrior2.name, warrior2.healthbar, warrior2.armor, warrior2.stamina)
     if player1.healthbar < 10:
