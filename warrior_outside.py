@@ -21,25 +21,25 @@ def role_choice(*players):
 def fight(*players):
     while True:
         attackers, defenders, players = role_choice(*players)
-        main_player = random.choice([i for i in players])
-        opponents = [i for i in players if i != main_player]
-        for op in opponents:
-            if op in attackers:
-                damage = op.attack()
-                if main_player in attackers:
-                    main_player.mutual_attack()
-                    op.mutual_attack()
+        for p in random.choices(players):
+            opponents = [i for i in players if i != p]
+            for op in opponents:
+                if op in attackers:
+                    damage = op.attack()
+                    if p in attackers:
+                        p.mutual_attack()
+                        op.mutual_attack()
+                    else:
+                        p.protect(damage)
                 else:
-                    main_player.protect(damage)
-            else:
-                if main_player in attackers:
-                    damage = main_player.attack()
-                    op.protect(damage)
+                    if p in attackers:
+                        damage = p.attack()
+                        op.protect(damage)
         if op.healthbar <= 10:
             mercy(op)
             break
-        elif main_player.healthbar <= 10:
-            mercy(main_player)
+        elif p.healthbar <= 10:
+            mercy(p)
             break
 def mercy(player):
     """Функция пощадить или не пощадить - пользователь должен ввести да или нет"""
