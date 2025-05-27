@@ -18,9 +18,6 @@ def role_choice(*players):
             defenders.append(p)
     return attackers, defenders
 
-def declare_winner(winner):
-    print(f"Игра окончена. Победитель: {winner.name}!")
-
 def fight(*players):
     players = list(players)
     while len(players) > 1:
@@ -43,7 +40,7 @@ def fight(*players):
                     players.remove(op if op.healthbar <= 10 else p)
                     mercy(op if op.healthbar <= 10 else p)
                     if len(players) < 2:
-                        declare_winner(*players)
+                        print(f"Игра окончена. Победитель: {players[0].name}!")
 
 
 
