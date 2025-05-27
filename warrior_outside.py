@@ -18,9 +18,12 @@ def role_choice(*players):
             defenders.append(p)
     return attackers, defenders
 
+def declare_winner(winner):
+    print(f"Игра окончена. Победитель: {winner.name}!")
+
 def fight(*players):
-    is_alive = True
-    while is_alive:
+    players = list(players)
+    while len(players) > 1:
         for p in random.choices(players):
             attackers, defenders = role_choice(*players)
             opponents = [i for i in players if i != p]
@@ -37,20 +40,25 @@ def fight(*players):
                         damage = p.attack()
                         op.protect(damage)
                 if op.healthbar <= 10 or p.healthbar <= 10:
-                    is_alive = False
+                    players.remove(op if op.healthbar <= 10 else p)
                     mercy(op if op.healthbar <= 10 else p)
+                    if len(players) < 2:
+                        declare_winner(*players)
+
+
 
 
 def mercy(player):
     """Функция пощадить или не пощадить - пользователь должен ввести да или нет"""
-    while True:
+    waiting = True
+    while waiting:
         show_wercy = input('Игрок %s при смерти. Ты хочешь его пощадить? Введите "да" или "нет" ' % player.name)
         if show_wercy == 'да':
             print('%s будет жить' % player.name)
-            break
+            waiting = False
         elif show_wercy == 'нет':
             print('%s обречён на смерть' % player.name)
-            break
+            waiting = False
         else:
             print("Ошибочный ввод")
 
@@ -93,5 +101,6 @@ class WarmongerPRO(Warmonger):
 if __name__ == "__main__":
     warrior1 = WarmongerPRO('Parsifal')
     warrior2 = WarmongerPRO('Merlin')
-    players = [warrior1, warrior2]
+    warrior3 = WarmongerPRO('Dwight')
+    players = [warrior1, warrior2, warrior3]
     fight(*players)
