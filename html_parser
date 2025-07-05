@@ -1,43 +1,69 @@
+from urllib.parse import urlparse
+
 import bs4
 import requests
 import matplotlib.pyplot as plt
 from datetime import datetime
+from multiprocessing import Pool
+import urllib
 
-res = requests.get('https://mfd.ru/currency/?currency=USD')
-soup = bs4.BeautifulSoup(res.text, 'html.parser')
-table_raw = soup.find_all('table', {'class': 'mfd-table mfd-currency-table'})
-t_content = []
+fig_dict = {}
 
-for t in table_raw:
-    t_content.append(t.find_all('td'))
+plot_dicts = {}
 
-date_list = [datetime.strptime(j.text[2:], "%d.%m.%Y").strftime("%Y-%m") for i in t_content for j in i if
-             j.text[0] == 'с']
+def parse_html(link):
+    res = requests.get(link)
+    soup = bs4.BeautifulSoup(res.text, 'html.parser')
+    table_raw = soup.find_all('table', {'class': 'mfd-table mfd-currency-table'})
+    t_content = []
+    short_url = urlparse(link).netloc
 
-value_list = [float(j.text) for i in t_content for j in i if j.text[0].isdigit()]
+    for t in table_raw:
+        t_content.append(t.find_all('td'))
 
-currency_list = list(zip(date_list, value_list))
+    date_list = [datetime.strptime(j.text[2:], "%d.%m.%Y").strftime("%Y-%m") for i in t_content for j in i if
+                j.text[0] == 'с']
 
-plot_dict = {i: [] for i in list(set(date_list))}
+    value_list = [float(j.text) for i in t_content for j in i if j.text[0].isdigit()]
 
-for i in plot_dict.keys():
-    for j in currency_list:
-        if i == j[0]:
-            plot_dict[i].append(j[1])
+    currency_list = list(zip(date_list, value_list))
 
-for i in plot_dict.keys():
-    plot_dict[i] = sum(plot_dict[i]) / len(plot_dict[i])
+    plot_dict = {i: [] for i in list(set(date_list))}
 
-sorted_dates = sorted(plot_dict.keys())
 
-fig, ax = plt.subplots()
+    for i in plot_dict.keys():
+        for j in currency_list:
+            if i == j[0]:
+                plot_dict[i].append(j[1])
 
-ax.plot(sorted_dates, [plot_dict[v] for v in sorted_dates])
+    for i in plot_dict.keys():
+        plot_dict[i] = sum(plot_dict[i]) / len(plot_dict[i])
 
-plt.title("Средний месячный курс RUR/USD")
+    return {short_url:plot_dict}
 
-plt.xlabel("Месяц/год")
+def plotting(raw_plot_dict):
+    for source, plot_data in raw_plot_dict.items():
+        sorted_dates = sorted(plot_data.keys())
+        fig, ax = plt.subplots()
+        ax.plot(sorted_dates, [plot_data[cur] for cur in sorted_dates])
+        plt.title("Средний месячный курс RUR/USD")
+        plt.xlabel("Месяц/год")
+        plt.ylabel("Курс USD")
+    return {source:fig}
 
-plt.ylabel("Курс USD")
+if __name__ == '__main__':
+    links = ['https://mfd.ru/currency/?currency=USD']
+    with Pool(processes=len(links)) as plotter:
+        results = plotter.map(parse_html,links)
 
-plt.show()
+    for res in results:
+        fig_dict.update(plotting(res))
+
+
+    for fig_name in fig_dict.keys():
+        fig = fig_dict[fig_name]  # Достаем объект фигуры
+
+    print(fig_dict)
+    for title, fig in fig_dict.items():
+        plt.show()
+        fig.savefig(f"{title}.png")
