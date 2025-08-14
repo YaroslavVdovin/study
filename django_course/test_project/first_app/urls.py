@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import index, home, creed, navigation_task, blog_middle, hard_blog
+from .views import home, creed, navigation_task, blog_middle, hard_blog
 
 urlpatterns = [
     path('home/', home, name='home'),
@@ -10,3 +10,4 @@ urlpatterns = [
     path('hard/', hard_blog, name='hard_blog')
 
 ]
+
