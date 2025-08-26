@@ -2,12 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ product.name }} - {{ product.id }}</title>
-
+    <title>Продукты</title>
 </head>
 <body>
-                <li>
-                    {{ product.name }} - {{ product.price }} - {{ product.category.name }} - {{ product.stock }}
-                </li>
+    <h1>Доступные продукты</h1>
+    <ul>
+        {% for product in products %}
+            <li>
+                <a href="http://127.0.0.1:8000/products/{{ product.id }}/">
+                    {% if product.stock > 0 %}
+                        {{ product.name }} - {{ product.price }} - {{ product.category.name }} - {{ product.stock }}
+                    {% else %}
+                        {{ product.name }} - <strong>Нет в наличии</strong>
+                    {% endif %}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
