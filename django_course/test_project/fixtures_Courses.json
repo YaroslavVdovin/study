@@ -1,0 +1,3 @@
+[{"model": "test_casing.courses", "pk": 1, "fields": {"name": "TestCourse", "description": "TestTestTest", "length": 25}},
+  {"model": "test_casing.courses", "pk": 2, "fields": {"name": "TestCourse2", "description": "TestTestTest2", "length": 25}},
+  {"model": "test_casing.courses", "pk": 3, "fields": {"name": "TestCourse3", "description": "TestTestTest3", "length": 25}}]

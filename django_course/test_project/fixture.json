@@ -1,0 +1,4 @@
+[{"model": "test_casing.subcourses", "pk": 1, "fields": {"name": "SubTest", "description": "SubTestSubTest", "parent_course": 3}},
+  {"model": "test_casing.subcourses", "pk": 2, "fields": {"name": "SubTest1", "description": "SubTestSubTestForFactory1", "parent_course": 1}},
+  {"model": "test_casing.subcourses", "pk": 3, "fields": {"name": "SubTest2", "description": "SubTestSubTestForFactory2", "parent_course": 2}}
+]
