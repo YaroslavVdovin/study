@@ -12,6 +12,6 @@ class ProductFactory(DjangoModelFactory):
     class Meta:
         model = Product
     name = factory.Faker('sentence')
-    SKU_code = factory.Faker('ean', length=8)
+    sku_code = factory.Faker('ean', length=8)
     description = factory.Faker('paragraph', nb_sentences=5)
     tags = factory.Faker('words', nb=5)

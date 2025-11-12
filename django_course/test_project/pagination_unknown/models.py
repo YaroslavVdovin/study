@@ -11,7 +11,7 @@ class Contact(models.Model):
 
 class Product(models.Model):
     name = models.TextField(max_length = 200)
-    SKU_code = models.CharField(max_length = 8)
+    sku_code = models.CharField(max_length = 8)
     description = models.TextField(max_length=1000)
     tags = models.TextField(max_length = 500)
 

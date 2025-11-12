@@ -1,6 +1,6 @@
 from itertools import product
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, TemplateView, FormView
 from django.views.generic import DetailView
 
@@ -40,28 +40,23 @@ class ProdDetailView(DetailView):
         return context
 
 
-def review_posting(request, product_id):
-    if not request.method == 'POST':
-        return redirect('prod_detail', pk=product_id)
+class RevInputView(FormView):
+    form_class = ProductRevForm
+    template_name = 'rev_input.html'
+    success_url = reverse_lazy('rev_accepted')
+    def form_valid(self, form):
 
-    form = ProductRevForm(request.POST)
-    if form.is_valid():
+        product_id = self.kwargs.get('product_id')
+        product = get_object_or_404(Product, id=product_id)
 
-        rev_text = form.cleaned_data['rev_text']
-        email = form.cleaned_data['email']
-
-        review = Review(
-            product_id=product_id,
-            rev_text=rev_text,
-            email=email
-        )
-
+        review = form.save(commit=False)
+        review.product = product
         review.save()
-        return redirect('rev_accepted')
-    return redirect('prod_detail', pk=product_id)
 
+        return super().form_valid(form)
 
-def review_accepted(request):
-    return render(request, 'review_accepted.html')
+class SuccessView(TemplateView):
+    template_name = 'review_accepted.html'
+
 
 # Create your views here.
