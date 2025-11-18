@@ -1,93 +1,80 @@
 import unittest
-
 from peewee import *
-
 import factories
 import models
-from Module16.services import add_stud, add_course, delete_stud, add_course_stud
-
+from Module15.services import add_student, add_course, delete_student, add_course_student
 import random
-
-import os
-
 
 
 class TestStud(unittest.TestCase):
 
-
-
     def setUp(self):
         self.conn = SqliteDatabase('database_test.sqlite')
         self.cursor = self.conn.cursor()
-        models.Students._meta.database = self.conn
-        models.Courses._meta.database = self.conn
-        models.StudentCourses._meta.database = self.conn
         self.conn.create_tables([models.Students, models.Courses, models.StudentCourses])
-        models.StudentCourses.delete().execute()
-        models.Courses.delete().execute()
-        models.Students.delete().execute()
+        factories.StudentFactory._meta.model = models.Students
+        factories.CourseFactory._meta.model = models.Courses
 
-    def test_stud_create(self):
+    def test_student_create_correct(self):
         studs = factories.StudentFactory.create_batch(5)
-        for stud in studs:
-            add_stud(stud)
-        self.assertEqual(len(studs), len(models.Students.select()))
+        add_student(name='TestBoy',
+                    surname='TestBoyevich',
+                    age=25,
+                    city='Tagil')
+        self.assertEqual(len(studs) + 1, len(models.Students.select()))
+
+    def test_student_create_incorrect(self):
+
+        self.assertIsNone(add_student(name='TestBoy',
+                                     surname='TestBoyevich',
+                                     age=105,
+                                     city='Tagil'))
 
     def test_course_create(self):
         courses = factories.CourseFactory.create_batch(5)
-        for course in courses:
-            add_course(course)
+        add_course(name='TestCourse',
+                   time_start='2025-09-12',
+                   time_end='2025-10-10')
+        self.assertEqual(len(courses) + 1, len(models.Courses.select()))
 
-        self.assertEqual(len(courses), len(models.Courses.select()))
+    def test_course_create_incorrect(self):
+        self.assertIsNone(add_course(name='TestCourse',
+                          time_start='2010-09-12',
+                          time_end='2025-10-10'))
 
-    def test_stud_delete1(self):
-        studs = factories.StudentFactory.create_batch(5)
-        for stud in studs:
-            add_stud(stud)
+    def test_student_delete1(self):
+        factories.StudentFactory.create_batch(5)
 
-        courses = factories.CourseFactory.create_batch(5)
-        for course in courses:
-            add_course(course)
-
-        stud_to_remove = models.Students.get(models.Students.id == random.randint(1,5))
-        courses_to_remove = models.StudentCourses.select().where(models.StudentCourses.student_id == stud_to_remove.id)
-        delete_stud(stud_to_remove, courses_to_remove)
-        self.assertFalse(models.Students.select().where(models.Students.id == stud_to_remove.id).exists() and models.StudentCourses.select().where(models.StudentCourses.student_id == stud_to_remove.id).exists())
+        student_to_remove = models.Students.get(models.Students.id == random.randint(1,5))
+        delete_student(student_to_remove)
+        self.assertFalse(models.Students.select().where(models.Students.id == student_to_remove.id).exists() and models.StudentCourses.select().where(models.StudentCourses.student_id == student_to_remove.id).exists())
 
     def test_stud_delete2(self):
-        studs = factories.StudentFactory.create_batch(5)
-        for stud in studs:
-            add_stud(stud)
-
-        courses = factories.CourseFactory.create_batch(5)
-        for course in courses:
-            add_course(course)
-
+        factories.StudentFactory.create_batch(5)
+        factories.CourseFactory.create_batch(5)
         stud_to_remove = models.Students.get(models.Students.id == random.randint(1, 5))
         course_to_remove = models.Courses.select().order_by(fn.Random()).first()
-        add_course_stud(stud_to_remove, course_to_remove)
-        courses_to_remove = models.StudentCourses.select().where(models.StudentCourses.student_id == stud_to_remove.id)
-        delete_stud(stud_to_remove, courses_to_remove)
+        add_course_student(stud_to_remove, course_to_remove)
+
+        delete_student(stud_to_remove)
         self.assertFalse(models.Students.select().where(
             models.Students.id == stud_to_remove.id).exists() and models.StudentCourses.select().where(
             models.StudentCourses.student_id == stud_to_remove.id).exists())
 
     def test_stud_plus_course(self):
-        studs = factories.StudentFactory.create_batch(5)
-        for stud in studs:
-            add_stud(stud)
-
-        courses = factories.CourseFactory.create_batch(5)
-        for course in courses:
-            add_course(course)
-
+        factories.StudentFactory.create_batch(5)
+        factories.CourseFactory.create_batch(5)
         student_to_add = models.Students.select().order_by(fn.Random()).first()
         course_to_add = models.Courses.select().order_by(fn.Random()).first()
-        add_course_stud(student_to_add, course_to_add)
+        add_course_student(student_to_add, course_to_add)
         self.assertTrue(models.StudentCourses.select().where(models.StudentCourses.student_id == student_to_add.id and models.StudentCourses.course_id == course_to_add.id).exists())
 
     def tearDown(self):
         self.conn.close()
+        models.StudentCourses.delete().execute()
+        models.Courses.delete().execute()
+        models.Students.delete().execute()
+
 
 if __name__ == '__main__':
     unittest.main()
