@@ -70,11 +70,10 @@ class TestStud(unittest.TestCase):
         self.assertTrue(models.StudentCourses.select().where(models.StudentCourses.student_id == student_to_add.id and models.StudentCourses.course_id == course_to_add.id).exists())
 
     def tearDown(self):
-        self.conn.close()
         models.StudentCourses.delete().execute()
         models.Courses.delete().execute()
         models.Students.delete().execute()
-
+        self.conn.close()
 
 if __name__ == '__main__':
     unittest.main()
